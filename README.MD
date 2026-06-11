@@ -39,15 +39,69 @@
 
 ## Docker 启动
 
+### 快速启动
+
 ```bash
 docker compose up --build
 ```
 
-启动后访问：
+### 环境变量配置
 
-- 前端：http://localhost:5173
-- 后端 API：http://localhost:8000/api/health
-- API 文档：http://localhost:8000/docs
+项目支持通过环境变量自定义服务地址和端口，推荐使用 `.env` 文件进行配置。
+
+在项目根目录创建 `.env` 文件：
+
+```bash
+# 后端服务端口（宿主机端口:容器端口）
+BACKEND_PORT=8000
+
+# 前端服务端口（宿主机端口:容器端口）
+FRONTEND_PORT=5173
+
+# 前端调用后端 API 的基础地址（构建时传入）
+# 注意：此地址是用户浏览器访问后端的地址，需与后端实际暴露地址一致
+VITE_API_BASE_URL=http://localhost:8000/api
+```
+
+使用 `.env` 文件启动：
+
+```bash
+docker compose --env-file .env up --build
+```
+
+### 启动后访问
+
+容器启动成功后，可通过以下地址访问：
+
+| 服务 | 地址 | 说明 |
+|------|------|------|
+| 前端应用 | http://localhost:5173 | 用户端预约界面 |
+| 后端 API | http://localhost:8000/api | API 接口根路径 |
+| 健康检查 | http://localhost:8000/api/health | 验证后端服务是否正常 |
+| API 文档 | http://localhost:8000/docs | Swagger 交互式文档 |
+| API 文档（备用） | http://localhost:8000/redoc | ReDoc 文档 |
+
+### 验证部署
+
+启动后可依次验证：
+
+1. 验证后端健康状态：
+```bash
+curl http://localhost:8000/api/health
+# 预期返回：{"status":"ok"}
+```
+
+2. 验证 API 文档：
+   浏览器访问 http://localhost:8000/docs 查看 Swagger 界面
+
+3. 验证前端页面：
+   浏览器访问 http://localhost:5173 查看预约系统界面
+
+### 自定义端口
+
+如需修改默认端口，修改 `.env` 文件中的端口配置，或直接修改 `docker-compose.yml` 中的 `ports` 映射。
+
+注意：修改后端端口后，需要同步修改 `VITE_API_BASE_URL` 中的端口号，否则前端无法正常调用后端 API。
 
 ## 本地开发
 
